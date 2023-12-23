@@ -27,7 +27,7 @@ pub fn init_logger() {
 
             writeln!(
                 buf,
-                "{} [{}] {}",
+                "{} [{:<5}] {}",
                 chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.6f %Z"),
                 buf.style()
                     .set_color(color)
