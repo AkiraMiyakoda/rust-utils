@@ -5,15 +5,14 @@
 
 use env_logger::{fmt::Color, Builder};
 use log::Level;
-use std::io::Write;
+use std::{borrow::Cow, io::Write};
 
 const DEAFULT_LEVEL: &str = "error";
 
 pub fn init_logger() {
-    let level = match std::env::var("RUST_LOG") {
-        Ok(level) => level,
-        Err(_) => String::from(DEAFULT_LEVEL),
-    };
+    let level = std::env::var("RUST_LOG")
+        .map(|v| Cow::Owned(v))
+        .unwrap_or(Cow::Borrowed(DEAFULT_LEVEL));
 
     Builder::new()
         .format(|buf, record| {
