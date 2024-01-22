@@ -3,39 +3,45 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use env_logger::{fmt::Color, Builder};
+use env_logger::{
+    fmt::style::{AnsiColor, Effects, Style},
+    Builder, DEFAULT_FILTER_ENV,
+};
 use log::Level;
 use std::io::Write;
 
 const DEAFULT_LEVEL: &str = "error";
 
 pub fn init_logger() {
-    let level = match std::env::var("RUST_LOG") {
+    let level = match std::env::var(DEFAULT_FILTER_ENV) {
         Ok(level) => level,
         Err(_) => String::from(DEAFULT_LEVEL),
     };
 
     Builder::new()
         .format(|buf, record| {
-            let (color, bold) = match record.level() {
-                Level::Error => (Color::Red, true),
-                Level::Warn => (Color::Yellow, true),
-                Level::Info => (Color::Green, false),
-                Level::Debug => (Color::Blue, false),
-                Level::Trace => (Color::White, false),
+            let (color, effect) = match record.level() {
+                Level::Error => (AnsiColor::Red, Effects::BOLD),
+                Level::Warn => (AnsiColor::Yellow, Effects::BOLD),
+                Level::Info => (AnsiColor::Green, Effects::new()),
+                Level::Debug => (AnsiColor::Blue, Effects::new()),
+                Level::Trace => (AnsiColor::White, Effects::new()),
             };
+            let level_style = Style::new().fg_color(Some(color.into())).effects(effect);
+            let args_style = Style::new().effects(effect);
 
             writeln!(
                 buf,
-                "{} [{:<5}] {}",
+                "{} [{}{:<5}{}] {}{}{}",
                 chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.6f %Z"),
-                buf.style()
-                    .set_color(color)
-                    .set_bold(bold)
-                    .value(record.level()),
-                buf.style().set_bold(bold).value(record.args()),
+                level_style.render(),
+                record.level(),
+                level_style.render_reset(),
+                args_style.render(),
+                record.args(),
+                args_style.render_reset(),
             )
         })
-        .parse_filters(&level)
+        .parse_filters(level.as_ref())
         .init();
 }
