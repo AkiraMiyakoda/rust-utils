@@ -3,19 +3,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use std::{borrow::Cow, io::Write};
+
+use chrono::Local;
 use env_logger::{
     fmt::style::{AnsiColor, Effects, Style},
     Builder, DEFAULT_FILTER_ENV,
 };
 use log::Level;
-use std::{borrow::Cow, io::Write};
 
 const DEAFULT_LEVEL: &str = "error";
 
 pub fn init_logger() {
-    let level = std::env::var(DEFAULT_FILTER_ENV)
-        .map(|v| Cow::Owned(v))
-        .unwrap_or(Cow::Borrowed(DEAFULT_LEVEL));
+    let level: Cow<str> = std::env::var(DEFAULT_FILTER_ENV)
+        .map(|v| v.into())
+        .unwrap_or(DEAFULT_LEVEL.into());
 
     Builder::new()
         .format(|buf, record| {
@@ -31,14 +33,10 @@ pub fn init_logger() {
 
             writeln!(
                 buf,
-                "{} [{}{:<5}{}] {}{}{}",
-                chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.6f %Z"),
-                level_style.render(),
-                record.level(),
-                level_style.render_reset(),
-                args_style.render(),
-                record.args(),
-                args_style.render_reset(),
+                "{timestamp} [{level_style}{level:<5}{level_style:#}] {args_style}{args}{args_style:#}",
+                timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.6f %Z"),
+                level = record.level(),
+                args = record.args(),
             )
         })
         .parse_filters(level.as_ref())
