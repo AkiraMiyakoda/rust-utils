@@ -1,13 +1,13 @@
 [package]
 name = "logger"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anstyle = "1.0.6"
-chrono = "0.4.31"
-env_logger = "0.11.0"
-log = "0.4.20"
+anstyle = "1.0.8"
+chrono = "0.4.38"
+env_logger = "0.11.5"
+log = "0.4.22"
