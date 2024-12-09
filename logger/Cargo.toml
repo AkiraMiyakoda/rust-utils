@@ -8,6 +8,6 @@ publish = false
 
 [dependencies]
 anstyle = "1.0.10"
-chrono = "0.4.38"
+chrono = "0.4.39"
 env_logger = "0.11.5"
 log = "0.4.22"
