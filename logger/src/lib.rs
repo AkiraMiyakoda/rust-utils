@@ -14,7 +14,7 @@ use log::Level;
 
 const DEAFULT_LEVEL: &str = "error";
 
-pub fn init_logger() {
+pub fn init() {
     let level: Cow<_> = std::env::var(DEFAULT_FILTER_ENV)
         .map(|v| v.into())
         .unwrap_or(DEAFULT_LEVEL.into());
