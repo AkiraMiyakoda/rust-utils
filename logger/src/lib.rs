@@ -12,6 +12,8 @@ use env_logger::{
 };
 use log::Level;
 
+pub use log;
+
 const DEAFULT_LEVEL: &str = "error";
 
 pub fn init() {
