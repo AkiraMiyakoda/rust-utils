@@ -7,7 +7,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anstyle = "1.0.11"
+anstyle = "1.0.13"
 chrono = "0.4.42"
 env_logger = "0.11.8"
 log = "0.4.28"
