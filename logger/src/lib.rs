@@ -7,8 +7,8 @@ use std::{borrow::Cow, io::Write};
 
 use chrono::Local;
 use env_logger::{
-    fmt::style::{AnsiColor, Effects, Style},
     Builder, DEFAULT_FILTER_ENV,
+    fmt::style::{AnsiColor, Effects, Style},
 };
 use log::Level;
 
@@ -17,9 +17,8 @@ pub use log;
 const DEAFULT_LEVEL: &str = "error";
 
 pub fn init() {
-    let level: Cow<_> = std::env::var(DEFAULT_FILTER_ENV)
-        .map(|v| v.into())
-        .unwrap_or(DEAFULT_LEVEL.into());
+    let level: Cow<_> =
+        std::env::var(DEFAULT_FILTER_ENV).map_or(DEAFULT_LEVEL.into(), |v| v.into());
 
     Builder::new()
         .format(|buf, record| {
