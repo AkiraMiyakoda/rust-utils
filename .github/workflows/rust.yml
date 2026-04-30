@@ -8,28 +8,11 @@ on:
     push:
 
 jobs:
-    logger:
+    packages:
         runs-on: ubuntu-latest
         defaults:
             run:
-                working-directory: ./logger
-        steps:
-            - name: Checkout Crate
-              uses: actions/checkout@v4
-            - name: Set Toolchain
-              uses: dtolnay/rust-toolchain@stable
-            - name: Install clippy
-              run: rustup component add clippy
-            - name: cargo check
-              run: cargo check
-            - name: cargo clippy
-              run: cargo clippy
-
-    format:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./format
+                working-directory: ./
         steps:
             - name: Checkout Crate
               uses: actions/checkout@v4
