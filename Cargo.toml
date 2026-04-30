@@ -7,12 +7,4 @@ edition = "2024"
 rust-version = "1.85"
 
 [workspace.lints.clippy]
-cast_possible_truncation = "deny"
-manual_let_else = "deny"
-map_unwrap_or = "deny"
-match_wildcard_for_single_variants = "deny"
-needless_raw_string_hashes = "deny"
-semicolon_if_nothing_returned = "deny"
-trivially_copy_pass_by_ref = "deny"
-uninlined_format_args = "deny"
-wildcard_imports = "deny"
+pedantic = "warn"

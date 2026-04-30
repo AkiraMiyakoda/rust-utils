@@ -17,8 +17,7 @@ pub use log;
 const DEAFULT_LEVEL: &str = "error";
 
 pub fn init() {
-    let level: Cow<_> =
-        std::env::var(DEFAULT_FILTER_ENV).map_or(DEAFULT_LEVEL.into(), |v| v.into());
+    let level = std::env::var(DEFAULT_FILTER_ENV).map_or(DEAFULT_LEVEL.into(), Cow::from);
 
     Builder::new()
         .format(|buf, record| {
