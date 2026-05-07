@@ -6,7 +6,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-rust_decimal = "1.41.0"
+rust_decimal = "1.42.0"
 
 [lints]
 workspace = true
