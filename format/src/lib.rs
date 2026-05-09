@@ -18,11 +18,7 @@ where
 
 impl std::fmt::Display for WithCommas {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut str = format!(
-            "{value:.digits$}",
-            value = self.0,
-            digits = f.precision().unwrap_or(0)
-        );
+        let mut str = format!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
         let mut index = str.find('.').unwrap_or(str.len());
         let min_index = if str.starts_with('-') || str.starts_with('+') {
             4
@@ -49,10 +45,7 @@ impl std::fmt::Display for WithCommas {
 #[test]
 fn test() {
     assert_eq!(
-        format!(
-            "{:.3}",
-            WithCommas::from(Decimal::from_str_exact("-12345.67").unwrap())
-        ),
+        format!("{:.3}", WithCommas::from(Decimal::from_str_exact("-12345.67").unwrap())),
         "-12,345.670"
     );
 }

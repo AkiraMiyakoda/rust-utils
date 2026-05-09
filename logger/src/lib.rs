@@ -3,13 +3,15 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use std::{borrow::Cow, io::Write};
+use std::borrow::Cow;
+use std::io::Write;
 
 use chrono::Local;
-use env_logger::{
-    Builder, DEFAULT_FILTER_ENV,
-    fmt::style::{AnsiColor, Effects, Style},
-};
+use env_logger::Builder;
+use env_logger::DEFAULT_FILTER_ENV;
+use env_logger::fmt::style::AnsiColor;
+use env_logger::fmt::style::Effects;
+use env_logger::fmt::style::Style;
 use log::Level;
 
 const DEAFULT_LEVEL: &str = "error";
