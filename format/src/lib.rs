@@ -5,6 +5,7 @@
 
 use std::fmt::Write;
 
+use compact_str::format_compact;
 use rust_decimal::prelude::*;
 
 pub struct WithCommas(f64);
@@ -20,7 +21,7 @@ where
 
 impl std::fmt::Display for WithCommas {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let str = format!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
+        let str = format_compact!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
         let point_index = str.find('.').unwrap_or(str.len());
 
         if self.0.is_sign_positive() && f.sign_plus() {
