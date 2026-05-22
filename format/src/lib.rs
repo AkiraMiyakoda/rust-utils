@@ -30,13 +30,18 @@ impl std::fmt::Display for WithCommas {
 
         let str = format_compact!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
         let point_index = str.find('.').unwrap_or(str.len());
+        let min_index = if str.starts_with('-') || str.ends_with('+') {
+            1
+        } else {
+            0
+        };
 
         if self.0.is_sign_positive() && f.sign_plus() {
             f.write_char('+')?;
         }
 
         for (i, c) in str.chars().enumerate() {
-            if i != 0 && i < point_index && (point_index - i).is_multiple_of(3) {
+            if i > min_index && i < point_index && (point_index - i).is_multiple_of(3) {
                 f.write_char(',')?;
             }
 
@@ -64,8 +69,36 @@ fn test() {
         "+1,234,568"
     );
     assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("1").unwrap())),
+        "1"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("12").unwrap())),
+        "12"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("123").unwrap())),
+        "123"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("1234").unwrap())),
+        "1,234"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("-1").unwrap())),
+        "-1"
+    );
+    assert_eq!(
         format!("{:.0}", WithCommas::from(Decimal::from_str_exact("-12").unwrap())),
         "-12"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("-123").unwrap())),
+        "-123"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("-1234").unwrap())),
+        "-1,234"
     );
     assert_eq!(format!("{:+.0}", WithCommas::from(f64::NAN)), "NaN");
     assert_eq!(format!("{:+.0}", WithCommas::from(f64::INFINITY)), "inf");
