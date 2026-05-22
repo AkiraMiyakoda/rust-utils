@@ -8,27 +8,33 @@ use std::fmt::Write;
 use compact_str::format_compact;
 use rust_decimal::prelude::*;
 
-pub struct WithCommas(f64);
-
-impl<T> From<T> for WithCommas
+pub struct WithCommas<T>(T)
 where
-    T: ToPrimitive,
+    T: Copy + ToPrimitive;
+
+impl<T> From<T> for WithCommas<T>
+where
+    T: Copy + ToPrimitive,
 {
     fn from(value: T) -> Self {
-        Self(value.to_f64().unwrap_or(f64::NAN))
+        Self(value)
     }
 }
 
-impl std::fmt::Display for WithCommas {
+impl<T> std::fmt::Display for WithCommas<T>
+where
+    T: Copy + ToPrimitive,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.0.is_nan() {
+        let value = self.0.to_f64().unwrap_or(f64::NAN);
+        if value.is_nan() {
             return write!(f, "NaN");
         }
-        if self.0.is_infinite() {
+        if value.is_infinite() {
             return write!(f, "inf");
         }
 
-        let str = format_compact!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
+        let str = format_compact!("{value:.digits$}", digits = f.precision().unwrap_or(0));
         let point_index = str.find('.').unwrap_or(str.len());
         let min_index = if str.starts_with('-') || str.ends_with('+') {
             1
@@ -36,7 +42,7 @@ impl std::fmt::Display for WithCommas {
             0
         };
 
-        if self.0.is_sign_positive() && f.sign_plus() {
+        if value.is_sign_positive() && f.sign_plus() {
             f.write_char('+')?;
         }
 
