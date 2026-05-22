@@ -21,6 +21,13 @@ where
 
 impl std::fmt::Display for WithCommas {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.0.is_nan() {
+            return write!(f, "NaN");
+        }
+        if self.0.is_infinite() {
+            return write!(f, "inf");
+        }
+
         let str = format_compact!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
         let point_index = str.find('.').unwrap_or(str.len());
 
@@ -56,4 +63,7 @@ fn test() {
         ),
         "+1,234,568"
     );
+    assert_eq!(format!("{:+.0}", WithCommas::from(f64::NAN)), "NaN");
+    assert_eq!(format!("{:+.0}", WithCommas::from(f64::INFINITY)), "inf");
+    assert_eq!(format!("{:+.0}", WithCommas::from(f64::NEG_INFINITY)), "inf");
 }
