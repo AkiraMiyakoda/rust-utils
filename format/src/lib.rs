@@ -3,6 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use std::fmt::Write;
+
 use rust_decimal::prelude::*;
 
 pub struct WithCommas(f64);
@@ -18,34 +20,39 @@ where
 
 impl std::fmt::Display for WithCommas {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut str = format!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
-        let mut index = str.find('.').unwrap_or(str.len());
-        let min_index = if str.starts_with('-') || str.starts_with('+') {
-            4
-        } else {
-            3
-        };
+        let str = format!("{value:.digits$}", value = self.0, digits = f.precision().unwrap_or(0));
+        let point_index = str.find('.').unwrap_or(str.len());
 
-        loop {
-            if index <= min_index {
-                break;
+        if self.0.is_sign_positive() && f.sign_plus() {
+            f.write_char('+')?;
+        }
+
+        for (i, c) in str.chars().enumerate() {
+            if i < point_index && (point_index - i).is_multiple_of(3) {
+                f.write_char(',')?;
             }
 
-            index -= 3;
-            str.insert(index, ',');
-        }
-        if self.0.is_sign_positive() && f.sign_plus() {
-            str.insert(0, '+');
+            f.write_char(c)?;
         }
 
-        write!(f, "{str}")
+        Ok(())
     }
 }
 
 #[test]
 fn test() {
     assert_eq!(
-        format!("{:.3}", WithCommas::from(Decimal::from_str_exact("-12345.67").unwrap())),
-        "-12,345.670"
+        format!(
+            "{:.3}",
+            WithCommas::from(Decimal::from_str_exact("-1234567.89").unwrap())
+        ),
+        "-1,234,567.890"
+    );
+    assert_eq!(
+        format!(
+            "{:+.0}",
+            WithCommas::from(Decimal::from_str_exact("1234567.89").unwrap())
+        ),
+        "+1,234,568"
     );
 }
