@@ -36,7 +36,7 @@ impl std::fmt::Display for WithCommas {
         }
 
         for (i, c) in str.chars().enumerate() {
-            if i < point_index && (point_index - i).is_multiple_of(3) {
+            if i != 0 && i < point_index && (point_index - i).is_multiple_of(3) {
                 f.write_char(',')?;
             }
 
@@ -62,6 +62,10 @@ fn test() {
             WithCommas::from(Decimal::from_str_exact("1234567.89").unwrap())
         ),
         "+1,234,568"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(Decimal::from_str_exact("-12").unwrap())),
+        "-12"
     );
     assert_eq!(format!("{:+.0}", WithCommas::from(f64::NAN)), "NaN");
     assert_eq!(format!("{:+.0}", WithCommas::from(f64::INFINITY)), "inf");
