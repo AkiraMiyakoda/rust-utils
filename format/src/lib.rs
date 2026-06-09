@@ -21,6 +21,15 @@ where
     }
 }
 
+impl<T> From<&T> for WithCommas<T>
+where
+    T: Copy + ToPrimitive,
+{
+    fn from(value: &T) -> Self {
+        Self(*value)
+    }
+}
+
 impl<T> std::fmt::Display for WithCommas<T>
 where
     T: Copy + ToPrimitive,
@@ -103,7 +112,15 @@ fn test() {
         "-123"
     );
     assert_eq!(
+        format!("{:.0}", WithCommas::from(&Decimal::from_str_exact("-123").unwrap())),
+        "-123"
+    );
+    assert_eq!(
         format!("{:.0}", WithCommas::from(Decimal::from_str_exact("-1234").unwrap())),
+        "-1,234"
+    );
+    assert_eq!(
+        format!("{:.0}", WithCommas::from(&Decimal::from_str_exact("-1234").unwrap())),
         "-1,234"
     );
     assert_eq!(format!("{:+.0}", WithCommas::from(f64::NAN)), "NaN");
