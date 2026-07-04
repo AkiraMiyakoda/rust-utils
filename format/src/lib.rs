@@ -43,19 +43,15 @@ where
             return write!(f, "inf");
         }
 
-        let str = format_compact!("{value:.digits$}", digits = f.precision().unwrap_or(0));
-        let point_index = str.find('.').unwrap_or(str.len());
-        let min_index = if str.starts_with('-') || str.ends_with('+') {
-            1
-        } else {
-            0
-        };
+        let text = format_compact!("{value:.digits$}", digits = f.precision().unwrap_or(0));
+        let point_index = text.find('.').unwrap_or(text.len());
+        let min_index = if text.starts_with('-') { 1 } else { 0 };
 
         if value.is_sign_positive() && f.sign_plus() {
             f.write_char('+')?;
         }
 
-        for (i, c) in str.chars().enumerate() {
+        for (i, c) in text.chars().enumerate() {
             if i > min_index && i < point_index && (point_index - i).is_multiple_of(3) {
                 f.write_char(',')?;
             }
