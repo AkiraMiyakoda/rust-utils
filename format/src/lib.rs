@@ -40,7 +40,13 @@ where
             return write!(f, "NaN");
         }
         if value.is_infinite() {
-            return write!(f, "inf");
+            return if value.is_sign_negative() {
+                write!(f, "-inf")
+            } else if f.sign_plus() {
+                write!(f, "+inf")
+            } else {
+                write!(f, "inf")
+            };
         }
 
         let text = format_compact!("{value:.digits$}", digits = f.precision().unwrap_or(0));
@@ -119,7 +125,7 @@ fn test() {
         format!("{:.0}", WithCommas::from(&Decimal::from_str_exact("-1234").unwrap())),
         "-1,234"
     );
-    assert_eq!(format!("{:+.0}", WithCommas::from(f64::NAN)), "NaN");
-    assert_eq!(format!("{:+.0}", WithCommas::from(f64::INFINITY)), "inf");
-    assert_eq!(format!("{:+.0}", WithCommas::from(f64::NEG_INFINITY)), "inf");
+    assert_eq!(format!("{:.0}", WithCommas::from(f64::INFINITY)), "inf");
+    assert_eq!(format!("{:+.0}", WithCommas::from(f64::INFINITY)), "+inf");
+    assert_eq!(format!("{:+.0}", WithCommas::from(f64::NEG_INFINITY)), "-inf");
 }
