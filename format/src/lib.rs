@@ -51,7 +51,7 @@ where
 
         let text = format_compact!("{value:.digits$}", digits = f.precision().unwrap_or(0));
         let point_index = text.find('.').unwrap_or(text.len());
-        let min_index = if text.starts_with('-') { 1 } else { 0 };
+        let min_index = usize::from(text.starts_with('-'));
 
         if value.is_sign_positive() && f.sign_plus() {
             f.write_char('+')?;
