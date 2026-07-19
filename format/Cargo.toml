@@ -6,7 +6,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-compact_str = "0.9"
+compact_str = "0.10"
 rust_decimal = "1"
 
 [lints]
