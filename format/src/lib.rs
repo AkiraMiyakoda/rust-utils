@@ -5,6 +5,8 @@
 
 use std::fmt::Write;
 
+use compact_str::CompactString;
+use compact_str::ToCompactString;
 use compact_str::format_compact;
 use rust_decimal::Decimal;
 use rust_decimal::prelude::*;
@@ -95,8 +97,8 @@ where
     }
 }
 
-fn format_decimal(value: Decimal, digits: usize) -> String {
-    let mut text = value.to_string();
+fn format_decimal(value: Decimal, digits: usize) -> CompactString {
+    let mut text = value.to_compact_string();
 
     if digits == 0 {
         return text;
@@ -123,16 +125,53 @@ fn write_commas(f: &mut std::fmt::Formatter<'_>, text: &str, is_negative: bool, 
     let point_index = text.find('.').unwrap_or(text.len());
     let min_index = usize::from(text.starts_with('-'));
 
+    let mut output = CompactString::with_capacity(text.len() + text.len() / 3 + 1);
+
     if !is_negative && sign_plus {
-        f.write_char('+')?;
+        output.push('+');
     }
 
     for (i, c) in text.chars().enumerate() {
         if i > min_index && i < point_index && (point_index - i).is_multiple_of(3) {
-            f.write_char(',')?;
+            output.push(',');
         }
 
-        f.write_char(c)?;
+        output.push(c);
+    }
+
+    let width = f.width().unwrap_or(0);
+    let padding = width.saturating_sub(output.chars().count());
+
+    match f.align() {
+        Some(std::fmt::Alignment::Left) => {
+            f.write_str(&output)?;
+            for _ in 0..padding {
+                f.write_char(f.fill())?;
+            }
+        }
+
+        Some(std::fmt::Alignment::Center) => {
+            let left = padding / 2;
+            let right = padding - left;
+
+            for _ in 0..left {
+                f.write_char(f.fill())?;
+            }
+
+            f.write_str(&output)?;
+
+            for _ in 0..right {
+                f.write_char(f.fill())?;
+            }
+        }
+
+        Some(std::fmt::Alignment::Right) | None => {
+            for _ in 0..padding {
+                f.write_char(f.fill())?;
+            }
+
+            f.write_str(&output)?;
+        }
     }
 
     Ok(())
@@ -241,5 +280,15 @@ mod tests {
         assert_eq!(format!("{:.0}", WithCommas::primitive(f64::INFINITY)), "inf");
         assert_eq!(format!("{:+.0}", WithCommas::primitive(f64::INFINITY)), "+inf");
         assert_eq!(format!("{:+.0}", WithCommas::primitive(f64::NEG_INFINITY)), "-inf");
+    }
+
+    #[test]
+    fn test_alignment() {
+        let value = Decimal::from_str_exact("1234567.89").unwrap();
+
+        assert_eq!(format!("{:>20.2}", WithCommas::from(value)), "        1,234,567.89");
+        assert_eq!(format!("{:<20.2}", WithCommas::from(value)), "1,234,567.89        ");
+        assert_eq!(format!("{:^20.2}", WithCommas::from(value)), "    1,234,567.89    ");
+        assert_eq!(format!("{:*>20.2}", WithCommas::from(value)), "********1,234,567.89");
     }
 }
